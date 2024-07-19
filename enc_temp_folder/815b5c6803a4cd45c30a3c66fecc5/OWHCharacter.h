@@ -22,9 +22,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	bool TryActivateAbility(UClass* AbilityClass);
-	bool IsAbilityActive(UClass* AbilityClass);
-	void CancelAbility(UClass* AbilityClass);
 protected:
 	virtual void BeginPlay() override;
 
@@ -40,6 +37,10 @@ protected:
 	void Climb(const FInputActionValue& Value);
 
 	void GrandAbility(const FGameplayTag& AbilityTag, TSubclassOf<class UGameplayAbility> AbilityToGrand);
+
+	bool TryActivateAbility(UClass* AbilityClass);
+	bool IsAbilityActive(UClass* AbilityClass);
+	void CancelAbility(UClass* AbilityClass);
 
 private:
 	class UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }

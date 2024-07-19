@@ -7,26 +7,12 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "TimerManager.h"
-#include "OWHCharacter.h"
 
 bool UOWHGameplayAbility_Climb::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags /* = nullptr */, const FGameplayTagContainer* TargetTags /* = nullptr */, OUT FGameplayTagContainer* OptionalRelevantTags /* = nullptr */) const
 {
 	if (ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor))
 	{
 		if (OwnerCharacter->GetCharacterMovement() == nullptr)
-		{
-			return false;
-		}
-
-		FVector StartTrace = OwnerCharacter->GetActorLocation();
-		FVector EndTrace = StartTrace + OwnerCharacter->GetActorForwardVector() * AttachmentDistance;
-
-		FHitResult HitResult;
-
-		OwnerCharacter->GetWorld()->LineTraceSingleByChannel(HitResult, StartTrace, EndTrace, ECC_Visibility);
-
-		if (HitResult.bBlockingHit == false)
 		{
 			return false;
 		}
@@ -42,14 +28,9 @@ void UOWHGameplayAbility_Climb::ActivateAbility(const FGameplayAbilitySpecHandle
 
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	StartClimb(OwnerCharacter);
-}
-
-void UOWHGameplayAbility_Climb::StartClimb(ACharacter* OwnerCharacter)
-{
 	if (UCharacterMovementComponent* CharacterMovementComponent = OwnerCharacter->GetCharacterMovement())
 	{
-		FVector StartTrace = OwnerCharacter->GetActorLocation() - OwnerCharacter->GetActorUpVector() * OwnerCharacter->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+		FVector StartTrace = OwnerCharacter->GetActorLocation();
 		FVector EndTrace = StartTrace + OwnerCharacter->GetActorForwardVector() * AttachmentDistance;
 
 		FHitResult HitResult;
@@ -58,6 +39,8 @@ void UOWHGameplayAbility_Climb::StartClimb(ACharacter* OwnerCharacter)
 
 		if (HitResult.bBlockingHit)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Climb Ability Start"));
+
 			CharacterMovementComponent->SetMovementMode(MOVE_Flying);
 			CharacterMovementComponent->bOrientRotationToMovement = false;
 
@@ -66,42 +49,6 @@ void UOWHGameplayAbility_Climb::StartClimb(ACharacter* OwnerCharacter)
 			FVector AttachLocation = HitResult.Location + PlayerCapsule->GetUnscaledCapsuleRadius() * HitResult.Normal;
 
 			UKismetSystemLibrary::MoveComponentTo(PlayerCapsule, AttachLocation, UKismetMathLibrary::MakeRotFromX(-HitResult.Normal), false, false, 0.2f, false, EMoveComponentAction::Type::Move, FLatentActionInfo());
-
-			DoClimb(OwnerCharacter);
-		}
-	}
-}
-
-void UOWHGameplayAbility_Climb::DoClimb(ACharacter* OwnerCharacter)
-{
-	if (UCharacterMovementComponent* CharacterMovementComponent = OwnerCharacter->GetCharacterMovement())
-	{
-		FVector StartTrace = OwnerCharacter->GetActorLocation() - OwnerCharacter->GetActorUpVector() * OwnerCharacter->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
-		FVector EndTrace = StartTrace + OwnerCharacter->GetActorForwardVector() * AttachmentDistance;
-
-		FHitResult HitResult;
-
-		OwnerCharacter->GetWorld()->LineTraceSingleByChannel(HitResult, StartTrace, EndTrace, ECC_Visibility);
-
-		if (HitResult.bBlockingHit)
-		{
-			OwnerCharacter->AddMovementInput(OwnerCharacter->GetActorUpVector(), 1);
-			OwnerCharacter->SetActorRotation(UKismetMathLibrary::MakeRotFromX(-HitResult.Normal));
-
-			OwnerCharacter->GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UOWHGameplayAbility_Climb::DoClimb, OwnerCharacter));
-		}
-		else
-		{
-			OwnerCharacter->AddMovementInput(OwnerCharacter->GetActorForwardVector(), 1);
-			if (AOWHCharacter* OWHCharacter = Cast<AOWHCharacter>(OwnerCharacter))
-			{
-				OWHCharacter->CancelAbility(UOWHGameplayAbility_Climb::StaticClass());
-			}
-			else
-			{
-				K2_CancelAbility();;
-			}
-			return;
 		}
 	}
 }
@@ -110,14 +57,5 @@ void UOWHGameplayAbility_Climb::EndAbility(const FGameplayAbilitySpecHandle Hand
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
-	ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
-	if (OwnerCharacter == nullptr || OwnerCharacter->GetCharacterMovement() == nullptr) { return; }
-
-	if (UCharacterMovementComponent* CharacterMovementComponent = OwnerCharacter->GetCharacterMovement())
-	{
-		CharacterMovementComponent->SetMovementMode(MOVE_Walking);
-		CharacterMovementComponent->bOrientRotationToMovement = true;
-	}
+	UE_LOG(LogTemp, Error, TEXT("Climb Ability End"));
 }
-
-

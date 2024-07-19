@@ -20,10 +20,7 @@ public:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 private:
-	void StartClimb(ACharacter* OwnerCharacter);
-	void DoClimb(ACharacter* OwnerCharacter);
-
-private:
 	UPROPERTY(EditDefaultsOnly, Category = Climb, meta = (AllowPrivateAccess = "true"))
 	float AttachmentDistance = 100;
+
 };
