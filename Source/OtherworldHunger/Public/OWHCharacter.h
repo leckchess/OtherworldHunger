@@ -5,10 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "AbilitySystemInterface.h"
+#include "GameplayAbilitySpecHandle.h"
+#include "GameplayTagContainer.h"
 #include "OWHCharacter.generated.h"
 
 UCLASS()
-class OTHERWORLDHUNGER_API AOWHCharacter : public ACharacter
+class OTHERWORLDHUNGER_API AOWHCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -22,11 +25,27 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void PossessedBy(AController* NewController) override;
+
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	/** Called for looking input */
+	void Climb(const FInputActionValue& Value);
+
+	void GrandAbility(const FGameplayTag& AbilityTag, TSubclassOf<class UGameplayAbility> AbilityToGrand);
+
+	bool TryActivateAbility(UClass* AbilityClass);
+	bool IsAbilityActive(UClass* AbilityClass);
+	void CancelAbility(UClass* AbilityClass);
+
+private:
+	class UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
+
+	void InitAbilities();
 
 private:
 	/** Camera boom positioning the camera behind the character */
@@ -36,6 +55,10 @@ private:
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
+	/** Ability system comp */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UAbilitySystemComponent* AbilitySystemComponent;
 
 	/** MappingContext */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -49,4 +72,17 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
+	/** Climb Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* ClimbAction;
+
+	/** Initial Abilities */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TMap<FGameplayTag, TSubclassOf<class UGameplayAbility>> InitialAbilities;
+
+	TMap<UClass*, FGameplayTag> AbilitiesMapping;
+
+	TMap<FGameplayTag, FGameplayAbilitySpecHandle> GrandedAbilities;
+
+	TArray<FGameplayTag> ActiveAbilities;
 };

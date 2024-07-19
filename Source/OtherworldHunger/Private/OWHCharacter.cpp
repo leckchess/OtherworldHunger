@@ -6,6 +6,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "AbilitySystemComponent.h"
+#include "Abilities/GameplayAbility.h"
+#include "GameplayAbilitySpec.h"
+#include "OWHGameplayAbility_Climb.h"
 
 AOWHCharacter::AOWHCharacter()
 {
@@ -18,12 +22,21 @@ AOWHCharacter::AOWHCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
 	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AOWHCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AOWHCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -31,6 +44,12 @@ void AOWHCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+	}
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		InitAbilities();
 	}
 }
 
@@ -51,6 +70,9 @@ void AOWHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AOWHCharacter::Look);
+
+		//Climb
+		EnhancedInputComponent->BindAction(ClimbAction, ETriggerEvent::Started, this, &AOWHCharacter::Climb);
 	}
 }
 
@@ -79,5 +101,91 @@ void AOWHCharacter::Look(const FInputActionValue& Value)
 	{
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+void AOWHCharacter::Climb(const FInputActionValue& Value)
+{
+	if (AbilitySystemComponent == nullptr) { return; }
+
+	UClass* AbilityClass = UOWHGameplayAbility_Climb::StaticClass();
+	if (AbilitiesMapping.Contains(AbilityClass) == false) { return; }
+
+	if (Value.Get<bool>())
+	{
+		if (IsAbilityActive(AbilityClass))
+		{
+			CancelAbility(AbilityClass);
+		}
+		else
+		{
+			TryActivateAbility(AbilityClass);
+		}
+	}
+}
+
+void AOWHCharacter::InitAbilities()
+{
+	if (AbilitySystemComponent == nullptr || InitialAbilities.Num() == 0)
+	{
+		return;
+	}
+	for (const TPair<FGameplayTag, TSubclassOf<class UGameplayAbility>>& Ability : InitialAbilities)
+	{
+		if (Ability.Key.IsValid() == false) { continue; }
+
+		GrandAbility(Ability.Key, Ability.Value);
+	}
+}
+
+void AOWHCharacter::GrandAbility(const FGameplayTag& AbilityTag, TSubclassOf<UGameplayAbility> AbilityToGrand)
+{
+	if (AbilitySystemComponent == nullptr || AbilityToGrand == nullptr) { return; }
+
+	GrandedAbilities.Add(AbilityTag, AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(AbilityToGrand)));
+	AbilitiesMapping.Add(AbilityToGrand->GetSuperClass(), AbilityTag);
+}
+
+bool AOWHCharacter::TryActivateAbility(UClass* AbilityClass)
+{
+	if (AbilitiesMapping.Contains(UOWHGameplayAbility_Climb::StaticClass()) == false) { return false; }
+
+	FGameplayTag AbilityTag = AbilitiesMapping[AbilityClass];
+
+	if (GrandedAbilities.Contains(AbilityTag) == false) { return false; }
+
+	FGameplayAbilitySpecHandle AbilityHandle = GrandedAbilities[AbilityTag];
+	if (AbilitySystemComponent->TryActivateAbility(AbilityHandle))
+	{
+		ActiveAbilities.AddUnique(AbilityTag);
+		return true;
+	}
+
+	return false;
+}
+
+bool AOWHCharacter::IsAbilityActive(UClass* AbilityClass)
+{
+	if (AbilitiesMapping.Contains(UOWHGameplayAbility_Climb::StaticClass()) == false) { return false; }
+
+	FGameplayTag AbilityTag = AbilitiesMapping[AbilityClass];
+
+	return ActiveAbilities.Contains(AbilityTag);
+}
+
+void AOWHCharacter::CancelAbility(UClass* AbilityClass)
+{
+	if (AbilitiesMapping.Contains(UOWHGameplayAbility_Climb::StaticClass()) == false) { return; }
+
+	FGameplayTag AbilityTag = AbilitiesMapping[AbilityClass];
+
+	if (GrandedAbilities.Contains(AbilityTag) == false) { return; }
+
+	FGameplayAbilitySpecHandle AbilityHandle = GrandedAbilities[AbilityTag];
+	AbilitySystemComponent->CancelAbilityHandle(AbilityHandle);
+
+	if (ActiveAbilities.Contains(AbilityTag))
+	{
+		ActiveAbilities.Remove(AbilityTag);
 	}
 }
