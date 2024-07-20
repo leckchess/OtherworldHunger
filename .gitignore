@@ -75,3 +75,8 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+/.vscode
+/Content/StarterContent
+.DS_Store
+OtherworldHunger.code-workspace
+.ignore
