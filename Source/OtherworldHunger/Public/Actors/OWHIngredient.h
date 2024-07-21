@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "OWHIngredient.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class OTHERWORLDHUNGER_API AOWHIngredient : public AActor
 {
 	GENERATED_BODY()
@@ -18,16 +18,20 @@ protected:
 	virtual void BeginPlay() override;
 
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* IngredientMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FName IngredientName;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	FText IngredientName;
 
 	//GETTERS AND SETTERS
 public:
-	FName GetIngredientName() const;
-	void SetIngredientName(const FName& Ingredient);
+	UFUNCTION(BlueprintGetter)
+	FText GetIngredientName() const;
+	UFUNCTION(BlueprintSetter)
+	void SetIngredientName(const FText& Ingredient);
+	UFUNCTION(BlueprintSetter)
+	void SetIngredientMesh(UStaticMeshComponent* IngredientMeshComp);
 
 	virtual void Tick(float DeltaTime) override;
 };

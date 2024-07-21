@@ -22,8 +22,15 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly)
-	TMap<TSubclassOf<AOWHIngredient>, int32> IngredientMap;
+	TMap<AOWHIngredient*, int32> IngredientMap;
 
 	UFUNCTION(BlueprintCallable)
-	void AddIngredient(TSubclassOf<AOWHIngredient> Ingredient);
+	void AddIngredient(AOWHIngredient* Ingredient);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveIngredient(AOWHIngredient* Ingredient);
+
+
+	UFUNCTION(BlueprintCallable)
+	void DisplayIngredients();
 };

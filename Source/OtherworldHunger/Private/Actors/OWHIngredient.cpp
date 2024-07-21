@@ -9,7 +9,7 @@ AOWHIngredient::AOWHIngredient()
 	PrimaryActorTick.bCanEverTick = true;
 
 	IngredientMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMeshComponent"));
-	IngredientName = "BasicIngredient";
+	IngredientName = FText::FromString("BasicIngredient");
 }
 
 void AOWHIngredient::Tick(float DeltaTime)
@@ -23,12 +23,18 @@ void AOWHIngredient::BeginPlay()
 }
 
 
-FName AOWHIngredient::GetIngredientName() const
+FText AOWHIngredient::GetIngredientName() const
 {
 	return IngredientName;
 }
 
-void AOWHIngredient::SetIngredientName(const FName& NameOfIngredient)
+void AOWHIngredient::SetIngredientName(const FText& NameOfIngredient)
 {
 	this->IngredientName = NameOfIngredient;
+}
+
+
+void AOWHIngredient::SetIngredientMesh(UStaticMeshComponent* IngredientMeshComp)
+{
+	IngredientMesh = IngredientMeshComp;
 }
