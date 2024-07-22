@@ -17,14 +17,15 @@ void UOWHCharacterInventory::BeginPlay()
 
 void UOWHCharacterInventory::AddIngredient(AOWHIngredient* Ingredient)
 {
-	if (IngredientMap.Find(Ingredient))
+	for (TPair<AOWHIngredient*, int32>& Pair : IngredientMap)
 	{
-		IngredientMap[Ingredient] = IngredientMap[Ingredient] + 1;
+		if (Pair.Key->GetIngredientName().ToString() == Ingredient->GetIngredientName().ToString())
+		{
+			Pair.Value++;
+			return;
+		}
 	}
-	else
-	{
-		IngredientMap.Add(Ingredient, 1);
-	}
+	IngredientMap.Add(Ingredient, 1);
 }
 
 void UOWHCharacterInventory::RemoveIngredient(AOWHIngredient* Ingredient)
@@ -44,14 +45,14 @@ void UOWHCharacterInventory::RemoveIngredient(AOWHIngredient* Ingredient)
 
 void UOWHCharacterInventory::DisplayIngredients()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 15.0f, FColor::Yellow, TEXT("INGREDIENT LIST"));
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 3.0f, FColor::Yellow, TEXT("INGREDIENT LIST"));
 	for (const TPair<AOWHIngredient*, int32>& Pair : IngredientMap)
 	{
 		FString KeyString = Pair.Key->GetIngredientName().ToString();
 		FString DebugMessage = FString::Printf(TEXT("Key: %s, Value: %d"), *KeyString, Pair.Value);
 		if (GEngine)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, DebugMessage);
+			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, DebugMessage);
 		}
 	}
 }

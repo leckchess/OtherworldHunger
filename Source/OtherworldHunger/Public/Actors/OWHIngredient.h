@@ -3,11 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OWHInteractableInterface.h"
 #include "GameFramework/Actor.h"
 #include "OWHIngredient.generated.h"
 
+class USphereComponent;
+
 UCLASS(BlueprintType)
-class OTHERWORLDHUNGER_API AOWHIngredient : public AActor
+class OTHERWORLDHUNGER_API AOWHIngredient : public AActor, public IOWHInteractableInterface
 {
 	GENERATED_BODY()
 
@@ -17,15 +20,29 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual AActor* Interact_Implementation(APawn* InstigatorPawn) override;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* IngredientMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* InteractSphere;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText IngredientName;
 
 	//GETTERS AND SETTERS
 public:
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	                    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+	                  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+
 	UFUNCTION(BlueprintGetter)
 	FText GetIngredientName() const;
 	UFUNCTION(BlueprintSetter)

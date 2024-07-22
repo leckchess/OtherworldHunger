@@ -10,6 +10,10 @@
 #include "Abilities/GameplayAbility.h"
 #include "GameplayAbilitySpec.h"
 #include "OWHGameplayAbility_Climb.h"
+#include "OWHGameplayAbility_Interact.h"
+#include "OWHInteractableInterface.h"
+#include "Actors/OWHIngredient.h"
+#include "Components/OWHCharacterInventory.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 AOWHCharacter::AOWHCharacter()
@@ -31,8 +35,9 @@ AOWHCharacter::AOWHCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); 
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 
+	CharacterInventory = CreateDefaultSubobject<UOWHCharacterInventory>(TEXT("CharacterInventoryComp"));
 	PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -63,7 +68,6 @@ void AOWHCharacter::PossessedBy(AController* NewController)
 void AOWHCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AOWHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -80,6 +84,9 @@ void AOWHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 		//Climb
 		EnhancedInputComponent->BindAction(ClimbAction, ETriggerEvent::Started, this, &AOWHCharacter::Climb);
+
+		//Interact
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AOWHCharacter::Interact);
 	}
 }
 
@@ -131,6 +138,45 @@ void AOWHCharacter::Climb(const FInputActionValue& Value)
 	}
 }
 
+void AOWHCharacter::Interact(const FInputActionValue& Value)
+{
+	// if (AbilitySystemComponent == nullptr) { return; }
+	//
+	// UClass* AbilityClass = UOWHGameplayAbility_Interact::StaticClass();
+	// if (AbilitiesMapping.Contains(AbilityClass) == false) { return; }
+	//
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("passed return"));
+	// if (Value.Get<bool>())
+	// {
+	// 	if (IsAbilityActive(AbilityClass))
+	// 	{
+	// 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("cancel ability"));
+	// 		CancelAbility(AbilityClass);
+	// 	}
+	// 	else
+	// 	{
+	// 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("trying to activate ability"));
+	// 		TryActivateAbility(AbilityClass);
+	// 	}
+	// }
+	TArray<AActor*> OverlappingActors;
+	GetOverlappingActors(OverlappingActors);
+
+	for (AActor* Actor : OverlappingActors)
+	{
+		if (Actor->GetClass()->ImplementsInterface(UOWHInteractableInterface::StaticClass()))
+		{
+			AActor* Ing = Cast<IOWHInteractableInterface>(Actor)->Interact_Implementation(this);
+			if (Cast<AOWHIngredient>(Ing))
+			{
+				CharacterInventory->AddIngredient(Cast<AOWHIngredient>(Ing));
+				Actor->Destroy();
+				CharacterInventory->DisplayIngredients();
+			}
+		}
+	}
+}
+
 void AOWHCharacter::InitAbilities()
 {
 	if (AbilitySystemComponent == nullptr || InitialAbilities.Num() == 0)
@@ -151,6 +197,11 @@ void AOWHCharacter::GrandAbility(const FGameplayTag& AbilityTag, TSubclassOf<UGa
 
 	GrandedAbilities.Add(AbilityTag, AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(AbilityToGrand)));
 	AbilitiesMapping.Add(AbilityToGrand->GetSuperClass(), AbilityTag);
+}
+
+UOWHCharacterInventory* AOWHCharacter::GetCharacterInventory() const
+{
+	return CharacterInventory;
 }
 
 bool AOWHCharacter::TryActivateAbility(UClass* AbilityClass)

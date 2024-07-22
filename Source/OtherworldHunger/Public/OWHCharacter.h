@@ -25,6 +25,7 @@ public:
 	bool TryActivateAbility(UClass* AbilityClass);
 	bool IsAbilityActive(UClass* AbilityClass);
 	void CancelAbility(UClass* AbilityClass);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -39,10 +40,20 @@ protected:
 	/** Called for looking input */
 	void Climb(const FInputActionValue& Value);
 
+	/** Called for looking input */
+	void Interact(const FInputActionValue& Value);
+
 	void GrandAbility(const FGameplayTag& AbilityTag, TSubclassOf<class UGameplayAbility> AbilityToGrand);
+
+	UPROPERTY(BlueprintReadWrite)
+	class UOWHCharacterInventory* CharacterInventory;
+
+public:
+	UOWHCharacterInventory* GetCharacterInventory() const;
 
 private:
 	class UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
+
 
 	void InitAbilities();
 
@@ -69,11 +80,15 @@ private:
 
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* LookAction;
+	UInputAction* LookAction;
 
 	/** Climb Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* ClimbAction;
+	UInputAction* ClimbAction;
+
+	/** Interact Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
 
 	/** Initial Abilities */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))

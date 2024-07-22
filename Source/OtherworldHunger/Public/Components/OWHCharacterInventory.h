@@ -18,19 +18,18 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-protected:
-	virtual void BeginPlay() override;
-
-	UPROPERTY(BlueprintReadOnly)
-	TMap<AOWHIngredient*, int32> IngredientMap;
-
 	UFUNCTION(BlueprintCallable)
 	void AddIngredient(AOWHIngredient* Ingredient);
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveIngredient(AOWHIngredient* Ingredient);
 
-
 	UFUNCTION(BlueprintCallable)
 	void DisplayIngredients();
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly)
+	TMap<AOWHIngredient*, int32> IngredientMap;
 };
