@@ -140,40 +140,21 @@ void AOWHCharacter::Climb(const FInputActionValue& Value)
 
 void AOWHCharacter::Interact(const FInputActionValue& Value)
 {
-	// if (AbilitySystemComponent == nullptr) { return; }
-	//
-	// UClass* AbilityClass = UOWHGameplayAbility_Interact::StaticClass();
-	// if (AbilitiesMapping.Contains(AbilityClass) == false) { return; }
-	//
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("passed return"));
-	// if (Value.Get<bool>())
-	// {
-	// 	if (IsAbilityActive(AbilityClass))
-	// 	{
-	// 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("cancel ability"));
-	// 		CancelAbility(AbilityClass);
-	// 	}
-	// 	else
-	// 	{
-	// 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("trying to activate ability"));
-	// 		TryActivateAbility(AbilityClass);
-	// 	}
-	// }
-	TArray<AActor*> OverlappingActors;
-	GetOverlappingActors(OverlappingActors);
+	if (AbilitySystemComponent == nullptr) { return; }
 
-	for (AActor* Actor : OverlappingActors)
+	UClass* AbilityClass = UOWHGameplayAbility_Interact::StaticClass();
+	if (AbilitiesMapping.Contains(AbilityClass) == false) { return; }
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("passed return"));
+	if (Value.Get<bool>())
 	{
-		if (Actor->GetClass()->ImplementsInterface(UOWHInteractableInterface::StaticClass()))
-		{
-			AActor* Ing = Cast<IOWHInteractableInterface>(Actor)->Interact_Implementation(this);
-			if (Cast<AOWHIngredient>(Ing))
-			{
-				CharacterInventory->AddIngredient(Cast<AOWHIngredient>(Ing));
-				Actor->Destroy();
-				CharacterInventory->DisplayIngredients();
-			}
-		}
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("trying to activate ability"));
+		TryActivateAbility(AbilityClass);
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("cancel ability"));
+		CancelAbility(AbilityClass);
 	}
 }
 
