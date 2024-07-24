@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "AbilitySystemInterface.h"
-#include "GameplayAbilitySpecHandle.h"
 #include "GameplayTagContainer.h"
 #include "OWHCharacter.generated.h"
 
@@ -21,10 +20,6 @@ public:
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	bool TryActivateAbility(UClass* AbilityClass);
-	bool IsAbilityActive(UClass* AbilityClass);
-	void CancelAbility(UClass* AbilityClass);
 
 protected:
 	virtual void BeginPlay() override;
@@ -43,8 +38,6 @@ protected:
 	/** Called for looking input */
 	void Interact(const FInputActionValue& Value);
 
-	void GrandAbility(const FGameplayTag& AbilityTag, TSubclassOf<class UGameplayAbility> AbilityToGrand);
-
 	UPROPERTY(BlueprintReadWrite)
 	class UOWHCharacterInventory* CharacterInventory;
 
@@ -53,9 +46,7 @@ public:
 
 private:
 	class UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
-
-
-	void InitAbilities();
+	class UOWHAbilitySystemComponent* GetOWHAbilitySystemComponent();
 
 private:
 	/** Camera boom positioning the camera behind the character */
@@ -89,14 +80,4 @@ private:
 	/** Interact Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* InteractAction;
-
-	/** Initial Abilities */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TMap<FGameplayTag, TSubclassOf<class UGameplayAbility>> InitialAbilities;
-
-	TMap<UClass*, FGameplayTag> AbilitiesMapping;
-
-	TMap<FGameplayTag, FGameplayAbilitySpecHandle> GrandedAbilities;
-
-	TArray<FGameplayTag> ActiveAbilities;
 };

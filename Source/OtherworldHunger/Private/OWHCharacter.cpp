@@ -6,7 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "AbilitySystemComponent.h"
+#include "OWHAbilitySystemComponent.h"
 #include "Abilities/GameplayAbility.h"
 #include "GameplayAbilitySpec.h"
 #include "OWHGameplayAbility_Climb.h"
@@ -27,7 +27,7 @@ AOWHCharacter::AOWHCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent = CreateDefaultSubobject<UOWHAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
@@ -58,10 +58,10 @@ void AOWHCharacter::PossessedBy(AController* NewController)
 		}
 	}
 
-	if (AbilitySystemComponent)
+	if (GetOWHAbilitySystemComponent())
 	{
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-		InitAbilities();
+		GetOWHAbilitySystemComponent()->InitAbilityActorInfo(this, this);
+		GetOWHAbilitySystemComponent()->InitAbilities();
 	}
 }
 
@@ -120,64 +120,47 @@ void AOWHCharacter::Look(const FInputActionValue& Value)
 
 void AOWHCharacter::Climb(const FInputActionValue& Value)
 {
-	if (AbilitySystemComponent == nullptr) { return; }
+	if (GetOWHAbilitySystemComponent() == nullptr) { return; }
 
 	UClass* AbilityClass = UOWHGameplayAbility_Climb::StaticClass();
-	if (AbilitiesMapping.Contains(AbilityClass) == false) { return; }
 
 	if (Value.Get<bool>())
 	{
-		if (IsAbilityActive(AbilityClass))
+		if (GetOWHAbilitySystemComponent()->IsAbilityActiveByClass(AbilityClass))
 		{
-			CancelAbility(AbilityClass);
+			GetOWHAbilitySystemComponent()->CancelAbilityByClass(AbilityClass);
 		}
 		else
 		{
-			TryActivateAbility(AbilityClass);
+			if (GetOWHAbilitySystemComponent()->ActivateAbilityByClass(AbilityClass))
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Activated"));
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("Failed"));
+			}
 		}
 	}
 }
 
 void AOWHCharacter::Interact(const FInputActionValue& Value)
 {
-	if (AbilitySystemComponent == nullptr) { return; }
+	if (GetOWHAbilitySystemComponent() == nullptr) { return; }
 
 	UClass* AbilityClass = UOWHGameplayAbility_Interact::StaticClass();
-	if (AbilitiesMapping.Contains(AbilityClass) == false) { return; }
 
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("passed return"));
 	if (Value.Get<bool>())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("trying to activate ability"));
-		TryActivateAbility(AbilityClass);
+		GetOWHAbilitySystemComponent()->ActivateAbilityByClass(AbilityClass);
 	}
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("cancel ability"));
-		CancelAbility(AbilityClass);
+		GetOWHAbilitySystemComponent()->CancelAbilityByClass(AbilityClass);
 	}
-}
-
-void AOWHCharacter::InitAbilities()
-{
-	if (AbilitySystemComponent == nullptr || InitialAbilities.Num() == 0)
-	{
-		return;
-	}
-	for (const TPair<FGameplayTag, TSubclassOf<class UGameplayAbility>>& Ability : InitialAbilities)
-	{
-		if (Ability.Key.IsValid() == false) { continue; }
-
-		GrandAbility(Ability.Key, Ability.Value);
-	}
-}
-
-void AOWHCharacter::GrandAbility(const FGameplayTag& AbilityTag, TSubclassOf<UGameplayAbility> AbilityToGrand)
-{
-	if (AbilitySystemComponent == nullptr || AbilityToGrand == nullptr) { return; }
-
-	GrandedAbilities.Add(AbilityTag, AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(AbilityToGrand)));
-	AbilitiesMapping.Add(AbilityToGrand->GetSuperClass(), AbilityTag);
 }
 
 UOWHCharacterInventory* AOWHCharacter::GetCharacterInventory() const
@@ -185,46 +168,7 @@ UOWHCharacterInventory* AOWHCharacter::GetCharacterInventory() const
 	return CharacterInventory;
 }
 
-bool AOWHCharacter::TryActivateAbility(UClass* AbilityClass)
+UOWHAbilitySystemComponent* AOWHCharacter::GetOWHAbilitySystemComponent()
 {
-	if (AbilitiesMapping.Contains(UOWHGameplayAbility_Climb::StaticClass()) == false) { return false; }
-
-	FGameplayTag AbilityTag = AbilitiesMapping[AbilityClass];
-
-	if (GrandedAbilities.Contains(AbilityTag) == false) { return false; }
-
-	FGameplayAbilitySpecHandle AbilityHandle = GrandedAbilities[AbilityTag];
-	if (AbilitySystemComponent->TryActivateAbility(AbilityHandle))
-	{
-		ActiveAbilities.AddUnique(AbilityTag);
-		return true;
-	}
-
-	return false;
-}
-
-bool AOWHCharacter::IsAbilityActive(UClass* AbilityClass)
-{
-	if (AbilitiesMapping.Contains(UOWHGameplayAbility_Climb::StaticClass()) == false) { return false; }
-
-	FGameplayTag AbilityTag = AbilitiesMapping[AbilityClass];
-
-	return ActiveAbilities.Contains(AbilityTag);
-}
-
-void AOWHCharacter::CancelAbility(UClass* AbilityClass)
-{
-	if (AbilitiesMapping.Contains(UOWHGameplayAbility_Climb::StaticClass()) == false) { return; }
-
-	FGameplayTag AbilityTag = AbilitiesMapping[AbilityClass];
-
-	if (GrandedAbilities.Contains(AbilityTag) == false) { return; }
-
-	FGameplayAbilitySpecHandle AbilityHandle = GrandedAbilities[AbilityTag];
-	AbilitySystemComponent->CancelAbilityHandle(AbilityHandle);
-
-	if (ActiveAbilities.Contains(AbilityTag))
-	{
-		ActiveAbilities.Remove(AbilityTag);
-	}
+	return Cast<UOWHAbilitySystemComponent>(AbilitySystemComponent);
 }
