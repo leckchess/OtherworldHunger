@@ -17,14 +17,15 @@ void UOWHCharacterInventory::BeginPlay()
 
 void UOWHCharacterInventory::AddIngredient(AOWHIngredient* Ingredient)
 {
-	if (Ingredient == nullptr) { return; }
-
-	if (IngredientMap.Contains(Ingredient) == false)
+	for (TPair<AOWHIngredient*, int32>& Pair : IngredientMap)
 	{
-		IngredientMap.Add(Ingredient, 0);
+		if (Pair.Key->GetIngredientName().ToString() == Ingredient->GetIngredientName().ToString())
+		{
+			Pair.Value++;
+			return;
+		}
 	}
-
-	IngredientMap[Ingredient]++;
+	IngredientMap.Add(Ingredient, 1);
 }
 
 void UOWHCharacterInventory::RemoveIngredient(AOWHIngredient* Ingredient)
