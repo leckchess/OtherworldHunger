@@ -7,34 +7,31 @@
 #include "OWHInteractableInterface.h"
 #include "Components/OWHCharacterInventory.h"
 #include "Actors/OWHIngredient.h"
+#include "OWHAbilitySystemComponent.h"
+#include "../../../../../../../Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/AbilitySystemGlobals.h"
 
 
 bool UOWHGameplayAbility_Interact::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-                                                      const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
 	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
 void UOWHGameplayAbility_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                                   const FGameplayEventData* TriggerEventData)
+	const FGameplayEventData* TriggerEventData)
 {
 	ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
 	if (OwnerCharacter == nullptr) { return; }
 
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	StartInteract(OwnerCharacter);
+	DoInteract(OwnerCharacter);
 }
 
 void UOWHGameplayAbility_Interact::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                              bool bReplicateEndAbility, bool bWasCancelled)
+	bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-}
-
-void UOWHGameplayAbility_Interact::StartInteract(ACharacter* OwnerCharacter)
-{
-	DoInteract(OwnerCharacter);
 }
 
 void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
@@ -54,5 +51,14 @@ void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
 				Actor->Destroy();
 			}
 		}
+	}
+
+	if (UOWHAbilitySystemComponent* OwningAbilityComponent = Cast<UOWHAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwningActorFromActorInfo())))
+	{
+		OwningAbilityComponent->CancelAbilityByClass(GetClass());
+	}
+	else
+	{
+		K2_CancelAbility();;
 	}
 }

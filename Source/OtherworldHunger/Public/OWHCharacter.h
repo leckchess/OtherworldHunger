@@ -22,8 +22,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-	virtual void BeginPlay() override;
-
 	virtual void PossessedBy(AController* NewController) override;
 
 	/** Called for movement input */
@@ -31,12 +29,6 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-
-	/** Called for looking input */
-	void Climb(const FInputActionValue& Value);
-
-	/** Called for looking input */
-	void Interact(const FInputActionValue& Value);
 
 	UPROPERTY(BlueprintReadWrite)
 	class UOWHCharacterInventory* CharacterInventory;
@@ -72,12 +64,4 @@ private:
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
-
-	/** Climb Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* ClimbAction;
-
-	/** Interact Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* InteractAction;
 };

@@ -3,6 +3,8 @@
 
 #include "OWHAbilitySystemComponent.h"
 #include "GameplayAbilitySpec.h"
+#include "OWHGameplayAbility.h"
+#include "GameFramework/Character.h"
 
 void UOWHAbilitySystemComponent::InitAbilities()
 {
@@ -18,11 +20,11 @@ void UOWHAbilitySystemComponent::InitAbilities()
 	}
 }
 
-void UOWHAbilitySystemComponent::GrantAbility(const FGameplayTag& AbilityTag,const TSubclassOf<UGameplayAbility>& AbilityToGrant)
+void UOWHAbilitySystemComponent::GrantAbility(const FGameplayTag& AbilityTag, const TSubclassOf<UGameplayAbility>& AbilityToGrant)
 {
 	if (AbilityToGrant == nullptr) { return; }
 
-	GiveAbility(FGameplayAbilitySpec(AbilityToGrant, 1, -1, this));
+	FGameplayAbilitySpecHandle SpecHandle = GiveAbility(FGameplayAbilitySpec(AbilityToGrant, 1, -1, this));
 }
 
 bool UOWHAbilitySystemComponent::ActivateAbilityByClass(TSubclassOf<UGameplayAbility> AbilityClass)
@@ -52,7 +54,7 @@ bool UOWHAbilitySystemComponent::ActivateAbilityByTag(const FGameplayTag& Abilit
 	return false;
 }
 
-bool UOWHAbilitySystemComponent::IsAbilityActiveByClass(TSubclassOf<UGameplayAbility> AbilityClass) const 
+bool UOWHAbilitySystemComponent::IsAbilityActiveByClass(TSubclassOf<UGameplayAbility> AbilityClass) const
 {
 	for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items)
 	{
@@ -90,7 +92,7 @@ void UOWHAbilitySystemComponent::CancelAbilityByClass(TSubclassOf<UGameplayAbili
 	}
 }
 
-void UOWHAbilitySystemComponent::CancelAbilityByTag(const FGameplayTag& AbilityTag) 
+void UOWHAbilitySystemComponent::CancelAbilityByTag(const FGameplayTag& AbilityTag)
 {
 	const FGameplayTagContainer TagContainer = FGameplayTagContainer(AbilityTag);
 	for (const FGameplayAbilitySpec& Spec : ActivatableAbilities.Items)

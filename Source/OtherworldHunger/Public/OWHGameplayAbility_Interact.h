@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/GameplayAbility.h"
+#include "OWHGameplayAbility.h"
 #include "OWHGameplayAbility_Interact.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class OTHERWORLDHUNGER_API UOWHGameplayAbility_Interact : public UGameplayAbility
+class OTHERWORLDHUNGER_API UOWHGameplayAbility_Interact : public UOWHGameplayAbility
 {
 	GENERATED_BODY()
 

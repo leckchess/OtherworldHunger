@@ -9,7 +9,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "TimerManager.h"
 #include "OWHCharacter.h"
-#include "../../../../../../../Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/AbilitySystemGlobals.h"
+#include "AbilitySystemGlobals.h"
 #include "OWHAbilitySystemComponent.h"
 
 bool UOWHGameplayAbility_Climb::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags /* = nullptr */, const FGameplayTagContainer* TargetTags /* = nullptr */, OUT FGameplayTagContainer* OptionalRelevantTags /* = nullptr */) const
@@ -97,7 +97,7 @@ void UOWHGameplayAbility_Climb::DoClimb(ACharacter* OwnerCharacter)
 			OwnerCharacter->AddMovementInput(OwnerCharacter->GetActorForwardVector(), 1);
 			if (UOWHAbilitySystemComponent* OwningAbilityComponent = Cast<UOWHAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwningActorFromActorInfo())))
 			{
-				OwningAbilityComponent->CancelAbilityByClass(UOWHGameplayAbility_Climb::StaticClass());
+				OwningAbilityComponent->CancelAbilityByClass(GetClass());
 			}
 			else
 			{

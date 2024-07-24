@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/GameplayAbility.h"
+#include "OWHGameplayAbility.h"
 #include "OWHGameplayAbility_Climb.generated.h"
  
 /**
  * 
  */
 UCLASS()
-class OTHERWORLDHUNGER_API UOWHGameplayAbility_Climb : public UGameplayAbility
+class OTHERWORLDHUNGER_API UOWHGameplayAbility_Climb : public UOWHGameplayAbility
 {
 	GENERATED_BODY()
 	
@@ -26,4 +26,6 @@ private:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = Climb, meta = (AllowPrivateAccess = "true"))
 	float AttachmentDistance = 100;
+
+	bool TerminateClimb = false;
 };

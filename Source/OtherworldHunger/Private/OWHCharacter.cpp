@@ -41,11 +41,6 @@ AOWHCharacter::AOWHCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AOWHCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void AOWHCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -58,7 +53,7 @@ void AOWHCharacter::PossessedBy(AController* NewController)
 		}
 	}
 
-	if (GetOWHAbilitySystemComponent())
+	if (GetLocalRole() == ENetRole::ROLE_Authority && GetOWHAbilitySystemComponent())
 	{
 		GetOWHAbilitySystemComponent()->InitAbilityActorInfo(this, this);
 		GetOWHAbilitySystemComponent()->InitAbilities();
@@ -81,12 +76,6 @@ void AOWHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AOWHCharacter::Look);
-
-		//Climb
-		EnhancedInputComponent->BindAction(ClimbAction, ETriggerEvent::Started, this, &AOWHCharacter::Climb);
-
-		//Interact
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AOWHCharacter::Interact);
 	}
 }
 
@@ -115,51 +104,6 @@ void AOWHCharacter::Look(const FInputActionValue& Value)
 	{
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
-	}
-}
-
-void AOWHCharacter::Climb(const FInputActionValue& Value)
-{
-	if (GetOWHAbilitySystemComponent() == nullptr) { return; }
-
-	UClass* AbilityClass = UOWHGameplayAbility_Climb::StaticClass();
-
-	if (Value.Get<bool>())
-	{
-		if (GetOWHAbilitySystemComponent()->IsAbilityActiveByClass(AbilityClass))
-		{
-			GetOWHAbilitySystemComponent()->CancelAbilityByClass(AbilityClass);
-		}
-		else
-		{
-			if (GetOWHAbilitySystemComponent()->ActivateAbilityByClass(AbilityClass))
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Activated"));
-			}
-			else
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("Failed"));
-			}
-		}
-	}
-}
-
-void AOWHCharacter::Interact(const FInputActionValue& Value)
-{
-	if (GetOWHAbilitySystemComponent() == nullptr) { return; }
-
-	UClass* AbilityClass = UOWHGameplayAbility_Interact::StaticClass();
-
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("passed return"));
-	if (Value.Get<bool>())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("trying to activate ability"));
-		GetOWHAbilitySystemComponent()->ActivateAbilityByClass(AbilityClass);
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("cancel ability"));
-		GetOWHAbilitySystemComponent()->CancelAbilityByClass(AbilityClass);
 	}
 }
 
