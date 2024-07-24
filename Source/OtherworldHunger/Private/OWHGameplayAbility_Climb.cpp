@@ -88,7 +88,7 @@ void UOWHGameplayAbility_Climb::DoClimb(ACharacter* OwnerCharacter)
 		if (HitResult.bBlockingHit)
 		{
 			OwnerCharacter->AddMovementInput(OwnerCharacter->GetActorUpVector(), 1);
-			OwnerCharacter->SetActorRotation(UKismetMathLibrary::MakeRotFromX(-HitResult.Normal));
+			//OwnerCharacter->SetActorRotation(UKismetMathLibrary::MakeRotFromX(-HitResult.Normal));
 
 			OwnerCharacter->GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UOWHGameplayAbility_Climb::DoClimb, OwnerCharacter));
 		}
