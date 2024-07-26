@@ -10,7 +10,6 @@ AOWHIngredient::AOWHIngredient()
 	PrimaryActorTick.bCanEverTick = true;
 
 	IngredientMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMeshComponent"));
-	IngredientName = FText::FromString("BasicIngredient");
 	InteractSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	InteractSphere->InitSphereRadius(50.0f);
 	InteractSphere->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
@@ -22,20 +21,10 @@ AOWHIngredient::AOWHIngredient()
 	InteractSphere->OnComponentEndOverlap.AddDynamic(this, &AOWHIngredient::OnOverlapEnd);
 }
 
-void AOWHIngredient::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void AOWHIngredient::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 AActor* AOWHIngredient::Interact_Implementation(APawn* InstigatorPawn)
 {
 	return this;
-}
+}	
 
 void AOWHIngredient::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -50,14 +39,14 @@ void AOWHIngredient::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* O
 	UE_LOG(LogTemp, Warning, TEXT("Overlap Ended"));
 }
 
-FText AOWHIngredient::GetIngredientName() const
+FGameplayTag AOWHIngredient::GetIngredientTag() const
 {
-	return IngredientName;
+	return IngredientTag;
 }
 
-void AOWHIngredient::SetIngredientName(const FText& NameOfIngredient)
+void AOWHIngredient::SetIngredientTag(const FGameplayTag& InIngredientTag)
 {
-	this->IngredientName = NameOfIngredient;
+	IngredientTag = InIngredientTag;
 }
 
 

@@ -15,6 +15,7 @@
 #include "Actors/OWHIngredient.h"
 #include "Components/OWHCharacterInventory.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "OWHPlayerHUD.h"
 
 AOWHCharacter::AOWHCharacter()
 {
@@ -30,6 +31,8 @@ AOWHCharacter::AOWHCharacter()
 	AbilitySystemComponent = CreateDefaultSubobject<UOWHAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
+	QuestManagerComponent = CreateDefaultSubobject<UOWHQuestsManager>(TEXT("QuestManagerComp"));
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -57,6 +60,11 @@ void AOWHCharacter::PossessedBy(AController* NewController)
 	{
 		GetOWHAbilitySystemComponent()->InitAbilityActorInfo(this, this);
 		GetOWHAbilitySystemComponent()->InitAbilities();
+	}
+
+	if (QuestManagerComponent)
+	{
+		QuestManagerComponent->InitializeComp();
 	}
 }
 
@@ -115,4 +123,37 @@ UOWHCharacterInventory* AOWHCharacter::GetCharacterInventory() const
 UOWHAbilitySystemComponent* AOWHCharacter::GetOWHAbilitySystemComponent()
 {
 	return Cast<UOWHAbilitySystemComponent>(AbilitySystemComponent);
+}
+
+void AOWHCharacter::OnRecipeUpdate(FRecipeDataTable* NewRecipe)
+{
+	// tell player
+	// update ui
+}
+
+void AOWHCharacter::SetPlayerHUD(UUserWidget* InPlayerHUD)
+{
+	PlayerHUD = Cast<UOWHPlayerHUD>(InPlayerHUD);
+
+	if (PlayerHUD && QuestManagerComponent && QuestManagerComponent->LoadRecipe())
+	{
+		PlayerHUD->UpdateRecipe(QuestManagerComponent->GetCurrentRecipe());
+	}
+}
+
+void AOWHCharacter::OnIngredientAddedToInventory(const FGameplayTag& IngredientTag, int32 NewCount)
+{
+	if (PlayerHUD && QuestManagerComponent && QuestManagerComponent->GetCurrentRecipeName() != "")
+	{
+		PlayerHUD->OnIngredientAddedToInventory(IngredientTag, NewCount);
+	}
+}
+
+void AOWHCharacter::UpdateRecipe(FRecipeDataTable* NewRecipe)
+{
+	if (PlayerHUD && QuestManagerComponent && QuestManagerComponent->GetCurrentRecipeName() != "")
+	{
+		PlayerHUD->UpdateRecipe(NewRecipe);
+		//TODO: check if the inventory already have items or not
+	}
 }

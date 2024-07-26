@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "OWHInteractableInterface.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagContainer.h"
 #include "OWHIngredient.generated.h"
 
 class USphereComponent;
@@ -23,13 +24,11 @@ public:
 	USphereComponent* InteractSphere;
 
 protected:
-	virtual void BeginPlay() override;
-
 	virtual AActor* Interact_Implementation(APawn* InstigatorPawn) override;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText IngredientName;
+	FGameplayTag IngredientTag;
 
 	//GETTERS AND SETTERS
 public:
@@ -42,11 +41,9 @@ public:
 
 
 	UFUNCTION(BlueprintGetter)
-	FText GetIngredientName() const;
+	FGameplayTag GetIngredientTag() const;
 	UFUNCTION(BlueprintSetter)
-	void SetIngredientName(const FText& Ingredient);
+	void SetIngredientTag(const FGameplayTag& InIngredientTag);
 	UFUNCTION(BlueprintSetter)
 	void SetIngredientMesh(UStaticMeshComponent* IngredientMeshComp);
-
-	virtual void Tick(float DeltaTime) override;
 };

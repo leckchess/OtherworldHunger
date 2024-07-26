@@ -21,8 +21,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddIngredient(AOWHIngredient* Ingredient);
 
+	bool HasIngredients(TMap<FGameplayTag, int32> Ingredients);
+
 	UFUNCTION(BlueprintCallable)
 	void RemoveIngredient(AOWHIngredient* Ingredient);
+
+	void RemoveIngredients(TMap<FGameplayTag, int32> Ingredients);
+
+	int32 GetIngredientCount(const FGameplayTag& IngredientTag) const;
 
 	UFUNCTION(BlueprintCallable)
 	void DisplayIngredients();
@@ -31,5 +37,5 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly)
-	TMap<AOWHIngredient*, int32> IngredientMap;
+	TMap<FGameplayTag, int32> IngredientMap;
 };
