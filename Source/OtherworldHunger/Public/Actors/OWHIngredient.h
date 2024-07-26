@@ -17,17 +17,15 @@ class OTHERWORLDHUNGER_API AOWHIngredient : public AActor, public IOWHInteractab
 public:
 	AOWHIngredient();
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* IngredientMesh;
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* InteractSphere;
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual AActor* Interact_Implementation(APawn* InstigatorPawn) override;
-
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent* IngredientMesh;
-
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* InteractSphere;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
