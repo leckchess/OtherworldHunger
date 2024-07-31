@@ -7,6 +7,7 @@
 #include "OWHInteractableInterface.h"
 #include "Components/OWHCharacterInventory.h"
 #include "Actors/OWHIngredient.h"
+#include "Components/SphereComponent.h"
 #include "OWHAbilitySystemComponent.h"
 #include "../../../../../../../Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/AbilitySystemGlobals.h"
 
@@ -49,17 +50,9 @@ void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
 			{
 				OWHCharacter->GetCharacterInventory()->AddIngredient(Cast<AOWHIngredient>(Ing));
 				Cast<AOWHIngredient>(Actor)->IngredientMesh->DestroyComponent();
+				Cast<AOWHIngredient>(Actor)->InteractSphere->DestroyComponent();
 				OWHCharacter->GetCharacterInventory()->DisplayIngredients();
 			}
 		}
-	}
-
-	if (UOWHAbilitySystemComponent* OwningAbilityComponent = Cast<UOWHAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwningActorFromActorInfo())))
-	{
-		OwningAbilityComponent->CancelAbilityByClass(GetClass());
-	}
-	else
-	{
-		K2_CancelAbility();;
 	}
 }
