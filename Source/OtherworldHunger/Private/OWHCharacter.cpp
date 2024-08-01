@@ -16,6 +16,8 @@
 #include "Components/OWHCharacterInventory.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "OWHPlayerHUD.h"
+#include "OWHAudioManager.h"
+#include "EngineUtils.h"
 
 AOWHCharacter::AOWHCharacter()
 {
@@ -66,11 +68,11 @@ void AOWHCharacter::PossessedBy(AController* NewController)
 	{
 		QuestManagerComponent->InitializeComp();
 	}
-}
 
-void AOWHCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	if (GetAudioManager())
+	{
+		AudioManager->StartLevel();
+	}
 }
 
 void AOWHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -120,7 +122,23 @@ UOWHCharacterInventory* AOWHCharacter::GetCharacterInventory() const
 	return CharacterInventory;
 }
 
-UOWHAbilitySystemComponent* AOWHCharacter::GetOWHAbilitySystemComponent()
+AOWHAudioManager* AOWHCharacter::GetAudioManager()
+{
+	if (AudioManager) { return AudioManager; }
+
+	for (TActorIterator<AOWHAudioManager> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		if (*ActorItr != nullptr)
+		{
+			AudioManager = *ActorItr;
+			break;
+		}
+	}
+
+	return AudioManager;
+}
+
+UOWHAbilitySystemComponent* AOWHCharacter::GetOWHAbilitySystemComponent() const
 {
 	return Cast<UOWHAbilitySystemComponent>(AbilitySystemComponent);
 }
@@ -156,4 +174,18 @@ void AOWHCharacter::UpdateRecipe(FRecipeDataTable* NewRecipe)
 		PlayerHUD->UpdateRecipe(NewRecipe);
 		//TODO: check if the inventory already have items or not
 	}
+}
+
+void AOWHCharacter::PlaySFX(const FGameplayTag& AudioTag)
+{
+	if (AudioTag.IsValid() == false || GetAudioManager() == nullptr) { return; }
+
+	AudioManager->PlaySound(AudioTag);
+}
+
+void AOWHCharacter::StopSFX(const FGameplayTag& AudioTag)
+{
+	if (AudioTag.IsValid() == false || GetAudioManager() == nullptr) { return; }
+
+	AudioManager->StopSound(AudioTag);
 }

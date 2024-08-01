@@ -19,16 +19,27 @@ public:
 	AOWHCharacter();
 
 public:
-	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	/** Recipe */
 	void OnRecipeUpdate(FRecipeDataTable* NewRecipe);
-
-	UFUNCTION(BlueprintCallable)
-	void SetPlayerHUD(UUserWidget* InPlayerHUD);
-
 	void OnIngredientAddedToInventory(const FGameplayTag& IngredientTag, int32 NewCount);
 	void UpdateRecipe(FRecipeDataTable* NewRecipe);
+
+	/** Audio */
+	void PlaySFX(const FGameplayTag& AudioTag);
+	void StopSFX(const FGameplayTag& AudioTag);
+
+	/** Getters */
+	class UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
+	class UOWHCharacterInventory* GetCharacterInventory() const;
+	UOWHQuestsManager* GetQuestsManager() const { return QuestManagerComponent; }
+	class AOWHAudioManager* GetAudioManager();
+	class UOWHAbilitySystemComponent* GetOWHAbilitySystemComponent() const;
+
+	/** Setters */
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerHUD(UUserWidget* InPlayerHUD);
 
 protected:
 	virtual void PossessedBy(AController* NewController) override;
@@ -39,19 +50,11 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
-	UPROPERTY(BlueprintReadWrite)
+private:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	class UOWHCharacterInventory* CharacterInventory;
 
-public:
-	UOWHCharacterInventory* GetCharacterInventory() const;
-
-	UOWHQuestsManager* GetQuestsManager() const { return QuestManagerComponent; }
-
-private:
-	class UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
-	class UOWHAbilitySystemComponent* GetOWHAbilitySystemComponent();
-
-private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
@@ -61,11 +64,11 @@ private:
 	class UCameraComponent* FollowCamera;
 
 	/** Ability system comp */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Ability, meta = (AllowPrivateAccess = "true"))
 	class UAbilitySystemComponent* AbilitySystemComponent;
-	
+
 	/** Ability system comp */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Recipe, meta = (AllowPrivateAccess = "true"))
 	UOWHQuestsManager* QuestManagerComponent;
 
 	/** MappingContext */
@@ -80,5 +83,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	/** Cached Ref.s */
 	class UOWHPlayerHUD* PlayerHUD;
+	class AOWHAudioManager* AudioManager;
 };

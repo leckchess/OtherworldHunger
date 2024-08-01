@@ -6,6 +6,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "InputActionValue.h"
 #include "InputAction.h"
+#include "GameplayTagContainer.h"
 #include "OWHGameplayAbility.generated.h"
 
 /**
@@ -18,6 +19,9 @@ class OTHERWORLDHUNGER_API UOWHGameplayAbility : public UGameplayAbility
 
 public:
 	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	
 	virtual void OnInputStatusChanged(const FInputActionValue& Value);
 
 private:
@@ -29,5 +33,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	bool ToggableAbility = false;
-	
+
+	UPROPERTY(EditAnywhere, Category="Audio")
+	FGameplayTag AudioTag;
 };
