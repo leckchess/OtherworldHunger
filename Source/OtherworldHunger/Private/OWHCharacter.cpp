@@ -94,7 +94,7 @@ void AOWHCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	PlaySFX(FootStepsTag);
+	//PlaySFX(FootStepsTag);
 
 	if (Controller != nullptr)
 	{
@@ -111,7 +111,7 @@ void AOWHCharacter::Move(const FInputActionValue& Value)
 
 void AOWHCharacter::StopMove(const FInputActionValue& Value)
 {
-	StopSFX(FootStepsTag);
+	//StopSFX(FootStepsTag);
 }
 
 void AOWHCharacter::Look(const FInputActionValue& Value)
