@@ -19,7 +19,6 @@ class OTHERWORLDHUNGER_API AOWHCharacter : public ACharacter, public IAbilitySys
 public:
 	AOWHCharacter();
 
-public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	/** Recipe */
@@ -41,9 +40,19 @@ public:
 	class AOWHAudioManager* GetAudioManager();
 	class UOWHAbilitySystemComponent* GetOWHAbilitySystemComponent() const;
 
+	UFUNCTION(BlueprintGetter)
+	bool GetIsClimbing();
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsClimbing = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsCookingEnabled = false;
+
 	/** Setters */
 	UFUNCTION(BlueprintCallable)
 	void SetPlayerHUD(UUserWidget* InPlayerHUD);
+	void SetIsClimbing(bool climbing);
 
 protected:
 	virtual void PossessedBy(AController* NewController) override;
@@ -56,7 +65,6 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 private:
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
 	class UOWHCharacterInventory* CharacterInventory;
 

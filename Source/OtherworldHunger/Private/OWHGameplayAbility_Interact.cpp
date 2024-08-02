@@ -12,7 +12,8 @@
 #include "AbilitySystemGlobals.h"
 
 
-bool UOWHGameplayAbility_Interact::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+bool UOWHGameplayAbility_Interact::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+                                                      const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
 	ACharacter* OWHCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
 
@@ -25,7 +26,7 @@ bool UOWHGameplayAbility_Interact::CanActivateAbility(const FGameplayAbilitySpec
 }
 
 void UOWHGameplayAbility_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                                   const FGameplayEventData* TriggerEventData)
 {
 	ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
 	if (OwnerCharacter == nullptr) { return; }
@@ -36,7 +37,7 @@ void UOWHGameplayAbility_Interact::ActivateAbility(const FGameplayAbilitySpecHan
 }
 
 void UOWHGameplayAbility_Interact::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	bool bReplicateEndAbility, bool bWasCancelled)
+                                              bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -49,10 +50,9 @@ void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
 	OWHCharacter->GetOverlappingActors(OverlappingActors, UOWHInteractableInterface::StaticClass());
 	for (AActor* Actor : OverlappingActors)
 	{
-		if (Actor)
+		if (Actor && Actor->GetClass()->IsChildOf(AOWHIngredient::StaticClass()))
 		{
-			AActor* Ing = Cast<IOWHInteractableInterface>(Actor)->Interact_Implementation(OWHCharacter);
-			if (Cast<AOWHIngredient>(Ing))
+			if (AActor* Ing = Cast<IOWHInteractableInterface>(Actor)->Interact_Implementation(OWHCharacter); Cast<AOWHIngredient>(Ing))
 			{
 				OWHCharacter->GetCharacterInventory()->AddIngredient(Cast<AOWHIngredient>(Ing));
 				Cast<AOWHIngredient>(Actor)->IngredientMesh->DestroyComponent();

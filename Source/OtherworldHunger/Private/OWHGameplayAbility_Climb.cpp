@@ -79,12 +79,14 @@ void UOWHGameplayAbility_Climb::DoClimb(ACharacter* OwnerCharacter)
 {
 	if (UCharacterMovementComponent* CharacterMovementComponent = OwnerCharacter->GetCharacterMovement())
 	{
+		
 		FVector StartTrace = OwnerCharacter->GetActorLocation() - OwnerCharacter->GetActorUpVector() * OwnerCharacter->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 		FVector EndTrace = StartTrace + OwnerCharacter->GetActorForwardVector() * AttachmentDistance;
 
 		FHitResult HitResult;
 
 		OwnerCharacter->GetWorld()->LineTraceSingleByChannel(HitResult, StartTrace, EndTrace, ECC_Visibility);
+		Cast<AOWHCharacter>(OwnerCharacter)->SetIsClimbing(true);
 
 		if (HitResult.bBlockingHit)
 		{
@@ -112,6 +114,7 @@ void UOWHGameplayAbility_Climb::EndAbility(const FGameplayAbilitySpecHandle Hand
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 	ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
+	Cast<AOWHCharacter>(OwnerCharacter)->SetIsClimbing(false);
 	if (OwnerCharacter == nullptr || OwnerCharacter->GetCharacterMovement() == nullptr) { return; }
 
 	if (UCharacterMovementComponent* CharacterMovementComponent = OwnerCharacter->GetCharacterMovement())

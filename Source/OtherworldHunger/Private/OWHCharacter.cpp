@@ -125,6 +125,7 @@ void AOWHCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+
 UOWHCharacterInventory* AOWHCharacter::GetCharacterInventory() const
 {
 	return CharacterInventory;
@@ -151,6 +152,11 @@ UOWHAbilitySystemComponent* AOWHCharacter::GetOWHAbilitySystemComponent() const
 	return Cast<UOWHAbilitySystemComponent>(AbilitySystemComponent);
 }
 
+bool AOWHCharacter::GetIsClimbing()
+{
+	return bIsClimbing;
+}
+
 void AOWHCharacter::OnRecipeUpdate(FRecipeDataTable* NewRecipe)
 {
 	// tell player
@@ -165,6 +171,11 @@ void AOWHCharacter::SetPlayerHUD(UUserWidget* InPlayerHUD)
 	{
 		PlayerHUD->UpdateRecipe(QuestManagerComponent->GetCurrentRecipe());
 	}
+}
+
+void AOWHCharacter::SetIsClimbing(bool climbing)
+{
+	bIsClimbing = climbing;
 }
 
 void AOWHCharacter::OnIngredientAddedToInventory(const FGameplayTag& IngredientTag, int32 NewCount)
