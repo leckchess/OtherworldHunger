@@ -22,6 +22,20 @@ public:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 private:
+	void FinishCooking();
+
+private:
+
+	UPROPERTY(EditAnywhere, Category = Cooking, meta = (AllowPrivateAccess = "true"))
+	float CookingTime = 0.2f;
+
+	UPROPERTY(EditAnywhere, Category = Cooking, meta = (AllowPrivateAccess = "true"))
+	FGameplayTag FinishCookingAudioTag;
+
 	class UOWHQuestsManager* RecipeManagerRef;
 	class UOWHCharacterInventory* InventoryRef;
+
+	class AOWHCookingPot* CookingPOT = nullptr;
+
+	FTimerHandle Cooking_TimeHandle;
 };

@@ -83,6 +83,7 @@ void AOWHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	{
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AOWHCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AOWHCharacter::StopMove);
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AOWHCharacter::Look);
@@ -92,6 +93,8 @@ void AOWHCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void AOWHCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	PlaySFX(FootStepsTag);
 
 	if (Controller != nullptr)
 	{
@@ -104,6 +107,11 @@ void AOWHCharacter::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
+}
+
+void AOWHCharacter::StopMove(const FInputActionValue& Value)
+{
+	StopSFX(FootStepsTag);
 }
 
 void AOWHCharacter::Look(const FInputActionValue& Value)
@@ -172,7 +180,17 @@ void AOWHCharacter::UpdateRecipe(FRecipeDataTable* NewRecipe)
 	if (PlayerHUD && QuestManagerComponent && QuestManagerComponent->GetCurrentRecipeName() != "")
 	{
 		PlayerHUD->UpdateRecipe(NewRecipe);
-		//TODO: check if the inventory already have items or not
+
+		if (CharacterInventory)
+		{
+			TArray<FGameplayTag> IngredientsTags;
+			NewRecipe->Ingredients.GetKeys(IngredientsTags);
+
+			for (const FGameplayTag& IngredientTag : IngredientsTags)
+			{
+				PlayerHUD->OnIngredientAddedToInventory(IngredientTag, CharacterInventory->GetIngredientCount(IngredientTag));
+			}
+		}
 	}
 }
 

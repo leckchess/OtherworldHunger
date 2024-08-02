@@ -77,7 +77,7 @@ void UOWHGameplayAbility::OnInputStatusChanged(const FInputActionValue& Value)
 			}
 			else
 			{
-				OwningAbilityComponent->CancelAbilityByTag(AbilityTags.GetByIndex(0));
+				//OwningAbilityComponent->CancelAbilityByTag(AbilityTags.GetByIndex(0));
 			}
 		}
 	}

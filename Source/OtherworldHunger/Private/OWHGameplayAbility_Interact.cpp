@@ -9,17 +9,23 @@
 #include "Actors/OWHIngredient.h"
 #include "Components/SphereComponent.h"
 #include "OWHAbilitySystemComponent.h"
-#include "../../../../../../../Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/AbilitySystemGlobals.h"
+#include "AbilitySystemGlobals.h"
 
 
-bool UOWHGameplayAbility_Interact::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-                                                      const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+bool UOWHGameplayAbility_Interact::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
+	ACharacter* OWHCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
+
+	TArray<AActor*> OverlappingActors;
+	OWHCharacter->GetOverlappingActors(OverlappingActors, UOWHInteractableInterface::StaticClass());
+
+	if (OverlappingActors.Num() == 0) { return false; }
+
 	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
 void UOWHGameplayAbility_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                                   const FGameplayEventData* TriggerEventData)
+	const FGameplayEventData* TriggerEventData)
 {
 	ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
 	if (OwnerCharacter == nullptr) { return; }
@@ -30,7 +36,7 @@ void UOWHGameplayAbility_Interact::ActivateAbility(const FGameplayAbilitySpecHan
 }
 
 void UOWHGameplayAbility_Interact::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                              bool bReplicateEndAbility, bool bWasCancelled)
+	bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -40,10 +46,10 @@ void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
 	AOWHCharacter* OWHCharacter = Cast<AOWHCharacter>(OwnerCharacter);
 
 	TArray<AActor*> OverlappingActors;
-	OWHCharacter->GetOverlappingActors(OverlappingActors);
+	OWHCharacter->GetOverlappingActors(OverlappingActors, UOWHInteractableInterface::StaticClass());
 	for (AActor* Actor : OverlappingActors)
 	{
-		if (Actor->GetClass()->ImplementsInterface(UOWHInteractableInterface::StaticClass()))
+		if (Actor)
 		{
 			AActor* Ing = Cast<IOWHInteractableInterface>(Actor)->Interact_Implementation(OWHCharacter);
 			if (Cast<AOWHIngredient>(Ing))
@@ -55,4 +61,6 @@ void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
 			}
 		}
 	}
+
+	K2_CancelAbility();
 }

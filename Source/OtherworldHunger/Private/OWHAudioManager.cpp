@@ -39,7 +39,7 @@ void AOWHAudioManager::StartLevel()
 
 void AOWHAudioManager::PlaySound(const FGameplayTag& AudioTag)
 {
-	if (SfxAudioComponent == nullptr || SFXData.Contains(AudioTag) == false) { return; }
+	if (SfxAudioComponent == nullptr || SFXData.Contains(AudioTag) == false || CurrentSFXTag == AudioTag) { return; }
 
 	CurrentSFXTag = AudioTag;
 	SfxAudioComponent->Sound = SFXData[AudioTag];
