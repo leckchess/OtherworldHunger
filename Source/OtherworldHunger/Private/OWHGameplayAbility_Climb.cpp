@@ -14,7 +14,7 @@
 
 bool UOWHGameplayAbility_Climb::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags /* = nullptr */, const FGameplayTagContainer* TargetTags /* = nullptr */, OUT FGameplayTagContainer* OptionalRelevantTags /* = nullptr */) const
 {
-	if (ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor))
+	if (AOWHCharacter* OwnerCharacter = Cast<AOWHCharacter>(ActorInfo->AvatarActor))
 	{
 		if (OwnerCharacter->GetCharacterMovement() == nullptr)
 		{
@@ -30,6 +30,7 @@ bool UOWHGameplayAbility_Climb::CanActivateAbility(const FGameplayAbilitySpecHan
 
 		if (HitResult.bBlockingHit == false)
 		{
+			OwnerCharacter->ShowNoticication("Can't Climb Here", ENotificationType::EError);
 			return false;
 		}
 	}
@@ -88,8 +89,6 @@ void UOWHGameplayAbility_Climb::DoClimb(ACharacter* OwnerCharacter)
 		if (HitResult.bBlockingHit)
 		{
 			OwnerCharacter->AddMovementInput(OwnerCharacter->GetActorUpVector(), 1);
-			//OwnerCharacter->SetActorRotation(UKismetMathLibrary::MakeRotFromX(-HitResult.Normal));
-
 			OwnerCharacter->GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &UOWHGameplayAbility_Climb::DoClimb, OwnerCharacter));
 		}
 		else

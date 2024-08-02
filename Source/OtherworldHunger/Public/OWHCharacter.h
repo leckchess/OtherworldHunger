@@ -8,6 +8,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
 #include "OWHQuestsManager.h"
+#include "OWHNotificationUIScreen.h"
 #include "OWHCharacter.generated.h"
 
 UCLASS()
@@ -25,6 +26,9 @@ public:
 	void OnRecipeUpdate(FRecipeDataTable* NewRecipe);
 	void OnIngredientAddedToInventory(const FGameplayTag& IngredientTag, int32 NewCount);
 	void UpdateRecipe(FRecipeDataTable* NewRecipe);
+
+	/** UI */
+	void ShowNoticication(FString Message, ENotificationType NotificationType);
 
 	/** Audio */
 	void PlaySFX(const FGameplayTag& AudioTag);

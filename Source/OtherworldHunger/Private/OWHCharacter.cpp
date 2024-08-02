@@ -194,6 +194,13 @@ void AOWHCharacter::UpdateRecipe(FRecipeDataTable* NewRecipe)
 	}
 }
 
+void AOWHCharacter::ShowNoticication(FString Message, ENotificationType NotificationType)
+{
+	if (PlayerHUD == nullptr) { return; }
+
+	PlayerHUD->ShowNoticication(Message, NotificationType);
+}
+
 void AOWHCharacter::PlaySFX(const FGameplayTag& AudioTag)
 {
 	if (AudioTag.IsValid() == false || GetAudioManager() == nullptr) { return; }

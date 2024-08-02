@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "OWHQuestsManager.h"
 #include "CommonUserWidget.h"
+#include "OWHNotificationUIScreen.h"
 #include "OWHPlayerHUD.generated.h"
 
 /**
@@ -21,7 +22,12 @@ public:
 
 	void OnIngredientAddedToInventory(const FGameplayTag& IngredientTag, int32 NewCount);
 
+	void ShowNoticication(FString Message, ENotificationType NotificationType);
+
 private:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional, AllowPrivateAccess))
-	class UOWHRecipeUIScreen* WBP_OWH_Recipe;
+	class UOWHRecipeUIScreen* WBP_OWH_Recipe; 
+	
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional, AllowPrivateAccess))
+	UOWHNotificationUIScreen* WBP_OWH_Notification;
 };

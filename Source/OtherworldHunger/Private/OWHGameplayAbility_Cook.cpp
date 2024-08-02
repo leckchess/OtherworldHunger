@@ -6,6 +6,7 @@
 #include "OWHQuestsManager.h"
 #include "Components/OWHCharacterInventory.h"
 #include "OWHCookingPot.h"
+#include "OWHNotificationUIScreen.h"
 
 void UOWHGameplayAbility_Cook::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
@@ -27,11 +28,13 @@ void UOWHGameplayAbility_Cook::OnGiveAbility(const FGameplayAbilityActorInfo* Ac
 
 bool UOWHGameplayAbility_Cook::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags /* = nullptr */, const FGameplayTagContainer* TargetTags /* = nullptr */, OUT FGameplayTagContainer* OptionalRelevantTags /* = nullptr */) const
 {
-	ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
+	AOWHCharacter* OwnerCharacter = Cast<AOWHCharacter>(ActorInfo->AvatarActor);
 
-	if (OwnerCharacter && OwnerCharacter->GetWorld()->GetTimerManager().IsTimerActive(Cooking_TimeHandle))
+	if (OwnerCharacter == nullptr) { return false; }
+
+	if (OwnerCharacter->GetWorld()->GetTimerManager().IsTimerActive(Cooking_TimeHandle))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cook Ability: Cooking Pot is busy please wait"));
+		OwnerCharacter->ShowNoticication("Cooking Pot is busy please wait", ENotificationType::EWarning);
 		return false;
 	}
 
@@ -40,7 +43,7 @@ bool UOWHGameplayAbility_Cook::CanActivateAbility(const FGameplayAbilitySpecHand
 
 	if (OverlappingActors.Num() == 0)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Cook Ability: Please Go To the Cooking POT to be able to cook"));
+		OwnerCharacter->ShowNoticication("Please Go To the Cooking POT to be able to cook", ENotificationType::EWarning);
 		return false;
 	}
 
@@ -50,7 +53,7 @@ bool UOWHGameplayAbility_Cook::CanActivateAbility(const FGameplayAbilitySpecHand
 		{
 			if (InventoryRef->HasIngredients(CurrentRecipe->Ingredients) == false)
 			{
-				UE_LOG(LogTemp, Error, TEXT("Cook Ability: Missing Ingredients"));
+				OwnerCharacter->ShowNoticication("Missing Ingredients", ENotificationType::EError);
 				return false;
 			}
 		}
@@ -69,15 +72,16 @@ void UOWHGameplayAbility_Cook::ActivateAbility(const FGameplayAbilitySpecHandle 
 		{
 			InventoryRef->RemoveIngredients(CurrentRecipe->Ingredients);
 
-			if (ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor))
+			if (AOWHCharacter* OwnerCharacter = Cast<AOWHCharacter>(ActorInfo->AvatarActor))
 			{
 				TArray<AActor*> OverlappingActors;
 				OwnerCharacter->GetOverlappingActors(OverlappingActors, AOWHCookingPot::StaticClass());
 				if (OverlappingActors.Num() > 0)
 				{
 					CookingPOT = Cast<AOWHCookingPot>(OverlappingActors[0]);
-					if(CookingPOT)
+					if (CookingPOT)
 					{
+						OwnerCharacter->ShowNoticication("Cooking Started", ENotificationType::EMessage);
 						CookingPOT->Cook(true);
 					}
 
@@ -101,6 +105,7 @@ void UOWHGameplayAbility_Cook::EndAbility(const FGameplayAbilitySpecHandle Handl
 	{
 		if (AOWHCharacter* OwnerCharacter = Cast<AOWHCharacter>(ActorInfo->AvatarActor))
 		{
+			OwnerCharacter->ShowNoticication("Cooking Done", ENotificationType::EMessage);
 			OwnerCharacter->PlaySFX(FinishCookingAudioTag);
 		}
 	}
