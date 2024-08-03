@@ -20,6 +20,10 @@ bool UOWHGameplayAbility_Climb::CanActivateAbility(const FGameplayAbilitySpecHan
 		{
 			return false;
 		}
+		else if (OwnerCharacter->GetCharacterMovement()->IsFalling() == true)
+		{
+			return false;
+		}
 
 		FVector StartTrace = OwnerCharacter->GetActorLocation();
 		FVector EndTrace = StartTrace + OwnerCharacter->GetActorForwardVector() * AttachmentDistance;
