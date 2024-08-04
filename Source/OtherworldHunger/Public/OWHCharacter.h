@@ -27,7 +27,7 @@ public:
 	void UpdateRecipe(FRecipeDataTable* NewRecipe);
 
 	/** UI */
-	void ShowNoticication(FString Message, ENotificationType NotificationType);
+	void ShowNotification(FString Message, ENotificationType NotificationType);
 
 	/** Audio */
 	void PlaySFX(const FGameplayTag& AudioTag);

@@ -23,7 +23,7 @@ class OTHERWORLDHUNGER_API UOWHNotificationUIScreen : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void ShowNoticication(FString Message, ENotificationType NotificationType);
+	void ShowNotification(FString Message, ENotificationType NotificationType);
 
 private:
 	void Show();

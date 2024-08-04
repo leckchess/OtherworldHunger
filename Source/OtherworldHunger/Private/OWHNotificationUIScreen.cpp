@@ -4,7 +4,7 @@
 #include "OWHNotificationUIScreen.h"
 #include "Components/TextBlock.h"
 
-void UOWHNotificationUIScreen::ShowNoticication(FString Message, ENotificationType NotificationType)
+void UOWHNotificationUIScreen::ShowNotification(FString Message, ENotificationType NotificationType)
 {
 	if (Text_Notification == nullptr) { return; }
 

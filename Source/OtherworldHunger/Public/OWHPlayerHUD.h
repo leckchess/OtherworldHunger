@@ -22,7 +22,7 @@ public:
 
 	void OnIngredientAddedToInventory(const FGameplayTag& IngredientTag, int32 NewCount);
 
-	void ShowNoticication(FString Message, ENotificationType NotificationType);
+	void ShowNotification(FString Message, ENotificationType NotificationType);
 
 private:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional, AllowPrivateAccess))

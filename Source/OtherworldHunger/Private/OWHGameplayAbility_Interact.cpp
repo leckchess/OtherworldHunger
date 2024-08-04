@@ -60,6 +60,11 @@ void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
 				OWHCharacter->GetCharacterInventory()->DisplayIngredients();
 			}
 		}
+
+		else if (Actor && Actor->ActorHasTag("LevelSwitch"))
+		{
+			OWHCharacter->ShowNotification("Enter the Skystones domain?", ENotificationType::EMessage);
+		}
 	}
 
 	K2_CancelAbility();

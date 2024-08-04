@@ -25,9 +25,9 @@ void UOWHPlayerHUD::OnIngredientAddedToInventory(const FGameplayTag& IngredientT
 	WBP_OWH_Recipe->UpdateIngredientCount(IngredientTag, NewCount);
 }
 
-void UOWHPlayerHUD::ShowNoticication(FString Message, ENotificationType NotificationType)
+void UOWHPlayerHUD::ShowNotification(FString Message, ENotificationType NotificationType)
 {
 	if (WBP_OWH_Notification == nullptr) { return; }
 
-	WBP_OWH_Notification->ShowNoticication(Message, NotificationType);
+	WBP_OWH_Notification->ShowNotification(Message, NotificationType);
 }

@@ -34,7 +34,7 @@ bool UOWHGameplayAbility_Climb::CanActivateAbility(const FGameplayAbilitySpecHan
 
 		if (HitResult.bBlockingHit == false)
 		{
-			OwnerCharacter->ShowNoticication("Can't Climb Here", ENotificationType::EError);
+			OwnerCharacter->ShowNotification("Can't Climb Here", ENotificationType::EError);
 			return false;
 		}
 	}

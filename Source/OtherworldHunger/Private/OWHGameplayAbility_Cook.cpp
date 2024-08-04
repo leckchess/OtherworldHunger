@@ -34,7 +34,7 @@ bool UOWHGameplayAbility_Cook::CanActivateAbility(const FGameplayAbilitySpecHand
 
 	if (OwnerCharacter->GetWorld()->GetTimerManager().IsTimerActive(Cooking_TimeHandle))
 	{
-		OwnerCharacter->ShowNoticication("Cooking Pot is busy please wait", ENotificationType::EWarning);
+		OwnerCharacter->ShowNotification("Cooking Pot is busy please wait", ENotificationType::EWarning);
 		return false;
 	}
 
@@ -43,7 +43,7 @@ bool UOWHGameplayAbility_Cook::CanActivateAbility(const FGameplayAbilitySpecHand
 
 	if (OverlappingActors.Num() == 0)
 	{
-		OwnerCharacter->ShowNoticication("Please Go To the Cooking POT to be able to cook", ENotificationType::EWarning);
+		OwnerCharacter->ShowNotification("Please Go To the Cooking POT to be able to cook", ENotificationType::EWarning);
 		return false;
 	}
 
@@ -53,7 +53,7 @@ bool UOWHGameplayAbility_Cook::CanActivateAbility(const FGameplayAbilitySpecHand
 		{
 			if (InventoryRef->HasIngredients(CurrentRecipe->Ingredients) == false)
 			{
-				OwnerCharacter->ShowNoticication("Missing Ingredients", ENotificationType::EError);
+				OwnerCharacter->ShowNotification("Missing Ingredients", ENotificationType::EError);
 				return false;
 			}
 		}
@@ -81,7 +81,7 @@ void UOWHGameplayAbility_Cook::ActivateAbility(const FGameplayAbilitySpecHandle 
 					CookingPOT = Cast<AOWHCookingPot>(OverlappingActors[0]);
 					if (CookingPOT)
 					{
-						OwnerCharacter->ShowNoticication("Cooking Started", ENotificationType::EMessage);
+						OwnerCharacter->ShowNotification("Cooking Started", ENotificationType::EMessage);
 						CookingPOT->Cook(true);
 					}
 
@@ -105,7 +105,7 @@ void UOWHGameplayAbility_Cook::EndAbility(const FGameplayAbilitySpecHandle Handl
 	{
 		if (AOWHCharacter* OwnerCharacter = Cast<AOWHCharacter>(ActorInfo->AvatarActor))
 		{
-			OwnerCharacter->ShowNoticication("Cooking Done", ENotificationType::EMessage);
+			OwnerCharacter->ShowNotification("Cooking Done", ENotificationType::EMessage);
 			OwnerCharacter->PlaySFX(FinishCookingAudioTag);
 		}
 	}

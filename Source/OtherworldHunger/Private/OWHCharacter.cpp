@@ -205,11 +205,11 @@ void AOWHCharacter::UpdateRecipe(FRecipeDataTable* NewRecipe)
 	}
 }
 
-void AOWHCharacter::ShowNoticication(FString Message, ENotificationType NotificationType)
+void AOWHCharacter::ShowNotification(FString Message, ENotificationType NotificationType)
 {
 	if (PlayerHUD == nullptr) { return; }
 
-	PlayerHUD->ShowNoticication(Message, NotificationType);
+	PlayerHUD->ShowNotification(Message, NotificationType);
 }
 
 void AOWHCharacter::PlaySFX(const FGameplayTag& AudioTag)
