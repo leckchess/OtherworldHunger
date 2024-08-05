@@ -212,6 +212,13 @@ void AOWHCharacter::ShowNotification(FString Message, ENotificationType Notifica
 	PlayerHUD->ShowNotification(Message, NotificationType);
 }
 
+void AOWHCharacter::ShowConfirmation()
+{
+	if (PlayerHUD == nullptr) { return; }
+
+	PlayerHUD->ShowConfirmation();
+}
+
 void AOWHCharacter::PlaySFX(const FGameplayTag& AudioTag)
 {
 	if (AudioTag.IsValid() == false || GetAudioManager() == nullptr) { return; }

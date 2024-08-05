@@ -7,6 +7,7 @@
 #include "OWHQuestsManager.h"
 #include "CommonUserWidget.h"
 #include "OWHNotificationUIScreen.h"
+#include "OWHConfirmUIScreen.h"
 #include "OWHPlayerHUD.generated.h"
 
 /**
@@ -24,10 +25,15 @@ public:
 
 	void ShowNotification(FString Message, ENotificationType NotificationType);
 
+	void ShowConfirmation();
+
 private:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional, AllowPrivateAccess))
 	class UOWHRecipeUIScreen* WBP_OWH_Recipe; 
 	
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional, AllowPrivateAccess))
 	UOWHNotificationUIScreen* WBP_OWH_Notification;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional, AllowPrivateAccess))
+	UOWHConfirmUIScreen* WBP_Confirm;
 };

@@ -63,7 +63,7 @@ void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
 
 		else if (Actor && Actor->ActorHasTag("LevelSwitch"))
 		{
-			OWHCharacter->ShowNotification("Enter the Skystones domain?", ENotificationType::EMessage);
+			OWHCharacter->ShowConfirmation();
 		}
 	}
 

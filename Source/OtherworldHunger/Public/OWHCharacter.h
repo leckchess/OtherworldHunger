@@ -9,6 +9,7 @@
 #include "GameplayTagContainer.h"
 #include "OWHQuestsManager.h"
 #include "OWHNotificationUIScreen.h"
+#include "OWHConfirmUIScreen.h"
 #include "OWHCharacter.generated.h"
 
 UCLASS()
@@ -28,6 +29,7 @@ public:
 
 	/** UI */
 	void ShowNotification(FString Message, ENotificationType NotificationType);
+	void ShowConfirmation();
 
 	/** Audio */
 	void PlaySFX(const FGameplayTag& AudioTag);
