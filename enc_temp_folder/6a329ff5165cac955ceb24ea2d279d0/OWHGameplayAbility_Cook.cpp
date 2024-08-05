@@ -7,7 +7,6 @@
 #include "Components/OWHCharacterInventory.h"
 #include "OWHCookingPot.h"
 #include "OWHNotificationUIScreen.h"
-#include "Components/CapsuleComponent.h"
 
 void UOWHGameplayAbility_Cook::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
@@ -45,18 +44,6 @@ bool UOWHGameplayAbility_Cook::CanActivateAbility(const FGameplayAbilitySpecHand
 	if (OverlappingActors.Num() == 0)
 	{
 		OwnerCharacter->ShowNotification("Please Go To the Cooking POT to be able to cook", ENotificationType::EWarning);
-		return false;
-	}
-
-	AActor* Pot = OverlappingActors[0];
-	FVector Dir = Pot->GetActorLocation() - (OwnerCharacter->GetActorLocation() - (OwnerCharacter->GetActorUpVector() * OwnerCharacter->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()));
-	Dir.Normalize();
-
-	float DotProduct = FVector::DotProduct(OwnerCharacter->GetActorForwardVector(), Dir);
-
-	if (DotProduct <= 0)
-	{
-		OwnerCharacter->ShowNotification("Look At the cooking Cooking POT to be able to cook", ENotificationType::EWarning);
 		return false;
 	}
 

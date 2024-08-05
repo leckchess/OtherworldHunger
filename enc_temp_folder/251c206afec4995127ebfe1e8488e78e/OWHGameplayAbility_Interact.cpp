@@ -10,44 +10,23 @@
 #include "Components/SphereComponent.h"
 #include "OWHAbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
-#include "Components/CapsuleComponent.h"
 
 
 bool UOWHGameplayAbility_Interact::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
-	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+                                                      const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
-	ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
+	ACharacter* OWHCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
 
 	TArray<AActor*> OverlappingActors;
-	OwnerCharacter->GetOverlappingActors(OverlappingActors, UOWHInteractableInterface::StaticClass());
+	OWHCharacter->GetOverlappingActors(OverlappingActors, UOWHInteractableInterface::StaticClass());
 
 	if (OverlappingActors.Num() == 0) { return false; }
-
-	bool FrontItemFound = false;
-	for (AActor* Interactable : OverlappingActors)
-	{
-		FVector Dir = Interactable->GetActorLocation() - (OwnerCharacter->GetActorLocation() - (OwnerCharacter->GetActorUpVector() * OwnerCharacter->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()));
-		Dir.Normalize();
-
-		float DotProduct = FVector::DotProduct(OwnerCharacter->GetActorForwardVector(), Dir);
-
-		if (DotProduct > 0)
-		{
-			FrontItemFound = true;
-			break;
-		}
-	}
-
-	if (FrontItemFound == false)
-	{
-		return false;
-	}
 
 	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
 void UOWHGameplayAbility_Interact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                                   const FGameplayEventData* TriggerEventData)
 {
 	ACharacter* OwnerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
 	if (OwnerCharacter == nullptr) { return; }
@@ -58,7 +37,7 @@ void UOWHGameplayAbility_Interact::ActivateAbility(const FGameplayAbilitySpecHan
 }
 
 void UOWHGameplayAbility_Interact::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	bool bReplicateEndAbility, bool bWasCancelled)
+                                              bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -75,20 +54,10 @@ void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
 		{
 			if (AActor* Ing = Cast<IOWHInteractableInterface>(Actor)->Interact_Implementation(OWHCharacter); Cast<AOWHIngredient>(Ing))
 			{
-
-				FVector Dir = Ing->GetActorLocation() - (OwnerCharacter->GetActorLocation() - (OwnerCharacter->GetActorUpVector() * OwnerCharacter->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()));
-				Dir.Normalize();
-
-				float DotProduct = FVector::DotProduct(OwnerCharacter->GetActorForwardVector(), Dir);
-
-				if (DotProduct > 0)
-				{
-					OWHCharacter->GetCharacterInventory()->AddIngredient(Cast<AOWHIngredient>(Ing));
-					Cast<AOWHIngredient>(Actor)->IngredientMesh->DestroyComponent();
-					Cast<AOWHIngredient>(Actor)->InteractSphere->DestroyComponent();
-					OWHCharacter->GetCharacterInventory()->DisplayIngredients();
-					break;
-				}
+				OWHCharacter->GetCharacterInventory()->AddIngredient(Cast<AOWHIngredient>(Ing));
+				Cast<AOWHIngredient>(Actor)->IngredientMesh->DestroyComponent();
+				Cast<AOWHIngredient>(Actor)->InteractSphere->DestroyComponent();
+				OWHCharacter->GetCharacterInventory()->DisplayIngredients();
 			}
 		}
 
