@@ -3,6 +3,8 @@
 
 #include "Actors/OWHIngredient.h"
 #include "Components/SphereComponent.h"
+#include "OWHCharacter.h"
+#include "Components/OWHCharacterInventory.h"
 
 // Sets default values
 AOWHIngredient::AOWHIngredient()
@@ -23,8 +25,21 @@ AOWHIngredient::AOWHIngredient()
 
 AActor* AOWHIngredient::Interact_Implementation(APawn* InstigatorPawn)
 {
-	return this;
-}	
+	if (InstigatorPawn == nullptr) { return nullptr; }
+
+	AOWHCharacter* OwnerCharacter = Cast<AOWHCharacter>(InstigatorPawn);
+
+	if (OwnerCharacter && OwnerCharacter->GetCharacterInventory())
+	{
+		OwnerCharacter->GetCharacterInventory()->AddIngredient(GetIngredientTag());
+		IngredientMesh->DestroyComponent();
+		InteractSphere->DestroyComponent();
+		OwnerCharacter->GetCharacterInventory()->DisplayIngredients();
+		return this;
+	}
+
+	return nullptr;
+}
 
 void AOWHIngredient::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

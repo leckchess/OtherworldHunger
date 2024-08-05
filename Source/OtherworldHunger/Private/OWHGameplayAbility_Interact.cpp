@@ -6,7 +6,6 @@
 #include "OWHCharacter.h"
 #include "OWHInteractableInterface.h"
 #include "Components/OWHCharacterInventory.h"
-#include "Actors/OWHIngredient.h"
 #include "Components/SphereComponent.h"
 #include "OWHAbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
@@ -71,22 +70,18 @@ void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
 	OWHCharacter->GetOverlappingActors(OverlappingActors, UOWHInteractableInterface::StaticClass());
 	for (AActor* Actor : OverlappingActors)
 	{
-		if (Actor && Actor->GetClass()->IsChildOf(AOWHIngredient::StaticClass()))
+		if (Actor)
 		{
-			if (AActor* Ing = Cast<IOWHInteractableInterface>(Actor)->Interact_Implementation(OWHCharacter); Cast<AOWHIngredient>(Ing))
+			if (IOWHInteractableInterface* Interactable = Cast<IOWHInteractableInterface>(Actor))
 			{
-
-				FVector Dir = Ing->GetActorLocation() - (OwnerCharacter->GetActorLocation() - (OwnerCharacter->GetActorUpVector() * OwnerCharacter->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()));
+				FVector Dir = Actor->GetActorLocation() - (OwnerCharacter->GetActorLocation() - (OwnerCharacter->GetActorUpVector() * OwnerCharacter->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()));
 				Dir.Normalize();
 
 				float DotProduct = FVector::DotProduct(OwnerCharacter->GetActorForwardVector(), Dir);
 
 				if (DotProduct > 0)
 				{
-					OWHCharacter->GetCharacterInventory()->AddIngredient(Cast<AOWHIngredient>(Ing));
-					Cast<AOWHIngredient>(Actor)->IngredientMesh->DestroyComponent();
-					Cast<AOWHIngredient>(Actor)->InteractSphere->DestroyComponent();
-					OWHCharacter->GetCharacterInventory()->DisplayIngredients();
+					Interactable->Interact_Implementation(OWHCharacter);
 					break;
 				}
 			}

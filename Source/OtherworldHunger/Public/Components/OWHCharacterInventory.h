@@ -19,7 +19,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-	void AddIngredient(AOWHIngredient* Ingredient);
+	void AddIngredient(const FGameplayTag& Ingredient);
 
 	bool HasIngredients(TMap<FGameplayTag, int32> Ingredients);
 

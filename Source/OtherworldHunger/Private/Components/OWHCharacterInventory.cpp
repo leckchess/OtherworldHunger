@@ -16,30 +16,30 @@ void UOWHCharacterInventory::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UOWHCharacterInventory::AddIngredient(AOWHIngredient* Ingredient)
+void UOWHCharacterInventory::AddIngredient(const FGameplayTag& Ingredient)
 {
 	for (TPair<FGameplayTag, int32>& Pair : IngredientMap)
 	{
 		if (Pair.Key.IsValid() == false) { continue; }
 
-		if (Pair.Key == Ingredient->GetIngredientTag())
+		if (Pair.Key == Ingredient)
 		{
 			Pair.Value++;
 
 			if (AOWHCharacter* OwnerCharacter = Cast<AOWHCharacter>(GetOwner()))
 			{
-				OwnerCharacter->OnIngredientAddedToInventory(Ingredient->GetIngredientTag(), IngredientMap[Ingredient->GetIngredientTag()]);
+				OwnerCharacter->OnIngredientAddedToInventory(Ingredient, IngredientMap[Ingredient]);
 			}
 
 			return;
 		}
 	}
 
-	IngredientMap.Add(Ingredient->GetIngredientTag(), 1);
+	IngredientMap.Add(Ingredient, 1);
 
 	if (AOWHCharacter* OwnerCharacter = Cast<AOWHCharacter>(GetOwner()))
 	{
-		OwnerCharacter->OnIngredientAddedToInventory(Ingredient->GetIngredientTag(), IngredientMap[Ingredient->GetIngredientTag()]);
+		OwnerCharacter->OnIngredientAddedToInventory(Ingredient, IngredientMap[Ingredient]);
 	}
 }
 
