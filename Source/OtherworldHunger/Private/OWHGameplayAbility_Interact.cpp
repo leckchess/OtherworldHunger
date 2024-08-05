@@ -82,14 +82,13 @@ void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
 				if (DotProduct > 0)
 				{
 					Interactable->Interact_Implementation(OWHCharacter);
-					break;
+					//break;
 				}
 			}
-		}
-
-		else if (Actor && Actor->ActorHasTag("SkystoneLevel"))
-		{
-			OWHCharacter->ShowConfirmation("Go to the Dunes of Skystone?");
+			else if (Actor->ActorHasTag("SkystoneLevel"))
+			{
+				OWHCharacter->ShowConfirmation("Go to the Dunes of Skystone?", "Skystones");
+			}
 		}
 	}
 

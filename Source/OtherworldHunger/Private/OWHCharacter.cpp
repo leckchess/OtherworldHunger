@@ -214,11 +214,11 @@ void AOWHCharacter::ShowNotification(FString Message, ENotificationType Notifica
 	PlayerHUD->ShowNotification(Message, NotificationType);
 }
 
-void AOWHCharacter::ShowConfirmation(FString Destination)
+void AOWHCharacter::ShowConfirmation(FString Message, FString LevelName)
 {
 	if (PlayerHUD == nullptr) { return; }
 
-	PlayerHUD->ShowConfirmation(Destination);
+	PlayerHUD->ShowConfirmation(Message, LevelName);
 	PauseGame();
 }
 

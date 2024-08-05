@@ -32,9 +32,9 @@ void UOWHPlayerHUD::ShowNotification(FString Message, ENotificationType Notifica
 	WBP_OWH_Notification->ShowNotification(Message, NotificationType);
 }
 
-void UOWHPlayerHUD::ShowConfirmation(FString Destination)
+void UOWHPlayerHUD::ShowConfirmation(FString Message, FString LevelName)
 {
 	if (WBP_Confirm == nullptr) { return; }
 
-	WBP_Confirm->Show(Destination);
+	WBP_Confirm->Show(Message, LevelName);
 }

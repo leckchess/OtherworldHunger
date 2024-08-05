@@ -6,9 +6,10 @@
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 
-void UOWHConfirmUIScreen::Show(FString Destination)
+void UOWHConfirmUIScreen::Show(FString Message, FString LevelName)
 {
-    TravelText->SetText(FText::FromString(Destination));
+    LevelChange = LevelName;
+    TravelText->SetText(FText::FromString(Message));
     this->SetVisibility(ESlateVisibility::Visible);
 }
 

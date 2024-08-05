@@ -15,10 +15,13 @@ class OTHERWORLDHUNGER_API UOWHConfirmUIScreen : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void Show(FString Destination);
+	void Show(FString Message, FString LevelName);
 
 	UFUNCTION(BlueprintCallable)
 	void Hide();
+
+	UPROPERTY(BlueprintReadOnly)
+	FString LevelChange;
 
 private:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional, AllowPrivateAccess))
