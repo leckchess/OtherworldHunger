@@ -33,9 +33,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DisplayIngredients();
 
+	UPROPERTY(BlueprintReadWrite)
+	TMap<FGameplayTag, int32> IngredientMap;
+
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(BlueprintReadOnly)
-	TMap<FGameplayTag, int32> IngredientMap;
 };

@@ -136,6 +136,11 @@ void UOWHCharacterInventory::DisplayIngredients()
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, DebugMessage);
 		}
+		if (AOWHCharacter* OwnerCharacter = Cast<AOWHCharacter>(GetOwner()))
+		{
+			for (int IngredientCount = 0; IngredientCount < Pair.Value; IngredientCount++)
+				OwnerCharacter->OnIngredientAddedToInventory(Pair.Key, IngredientMap[Pair.Key]);
+		}
 	}
 }
 
