@@ -15,6 +15,12 @@ class OTHERWORLDHUNGER_API UOWHConfirmUIScreen : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void Show();
+	void Show(FString Destination);
+
+	UFUNCTION(BlueprintCallable)
 	void Hide();
+
+private:
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional, AllowPrivateAccess))
+	class UTextBlock* TravelText;
 };

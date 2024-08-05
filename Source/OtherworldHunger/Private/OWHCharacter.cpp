@@ -17,6 +17,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "OWHPlayerHUD.h"
 #include "OWHAudioManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
 
 AOWHCharacter::AOWHCharacter()
@@ -52,6 +53,7 @@ void AOWHCharacter::PossessedBy(AController* NewController)
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
+		OWHController = PlayerController;
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
@@ -212,11 +214,26 @@ void AOWHCharacter::ShowNotification(FString Message, ENotificationType Notifica
 	PlayerHUD->ShowNotification(Message, NotificationType);
 }
 
-void AOWHCharacter::ShowConfirmation()
+void AOWHCharacter::ShowConfirmation(FString Destination)
 {
 	if (PlayerHUD == nullptr) { return; }
 
-	PlayerHUD->ShowConfirmation();
+	PlayerHUD->ShowConfirmation(Destination);
+	PauseGame();
+}
+
+void AOWHCharacter::PauseGame()
+{
+		OWHController->SetShowMouseCursor(true);
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		UGameplayStatics::SetViewportMouseCaptureMode(GetWorld(), EMouseCaptureMode::NoCapture);
+}
+
+void AOWHCharacter::ResumeGame()
+{
+		OWHController->SetShowMouseCursor(false);
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+		UGameplayStatics::SetViewportMouseCaptureMode(GetWorld(), EMouseCaptureMode::CapturePermanently);
 }
 
 void AOWHCharacter::PlaySFX(const FGameplayTag& AudioTag)

@@ -61,9 +61,9 @@ void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
 			}
 		}
 
-		else if (Actor && Actor->ActorHasTag("LevelSwitch"))
+		else if (Actor && Actor->ActorHasTag("SkystoneLevel"))
 		{
-			OWHCharacter->ShowConfirmation();
+			OWHCharacter->ShowConfirmation("Go to the Dunes of Skystone?");
 		}
 	}
 

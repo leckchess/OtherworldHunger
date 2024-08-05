@@ -25,7 +25,7 @@ public:
 
 	void ShowNotification(FString Message, ENotificationType NotificationType);
 
-	void ShowConfirmation();
+	void ShowConfirmation(FString Destination);
 
 private:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional, AllowPrivateAccess))

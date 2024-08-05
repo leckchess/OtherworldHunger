@@ -29,7 +29,12 @@ public:
 
 	/** UI */
 	void ShowNotification(FString Message, ENotificationType NotificationType);
-	void ShowConfirmation();
+	void ShowConfirmation(FString Destination);
+
+	UFUNCTION(BlueprintCallable)
+	void PauseGame();
+	UFUNCTION(BlueprintCallable)
+	void ResumeGame();
 
 	/** Audio */
 	void PlaySFX(const FGameplayTag& AudioTag);
@@ -104,4 +109,5 @@ private:
 	/** Cached Ref.s */
 	class UOWHPlayerHUD* PlayerHUD;
 	class AOWHAudioManager* AudioManager;
+	APlayerController* OWHController;
 };
