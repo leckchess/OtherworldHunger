@@ -89,6 +89,10 @@ void UOWHGameplayAbility_Interact::DoInteract(ACharacter* OwnerCharacter)
 			{
 				OWHCharacter->ShowConfirmation("Go to the Dunes of Skystone?", "Skystones");
 			}
+			else if (Actor->ActorHasTag("SwampLevel"))
+			{
+				OWHCharacter->ShowConfirmation("Go to the Forgotten Swamp?", "ForgottenSwamp");
+			}
 		}
 	}
 
